@@ -1,0 +1,38 @@
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Full Stack Developer Task</title>
+  <style>
+    span {
+      border: 1px solid gray;
+      padding: 2px;
+      margin: 2px;
+      width: 50px;
+      display: inline-block;
+      font-size: 8pt;
+    }
+  </style>
+  <script crossorigin src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
+</head>
+<body>
+  <div id="container"></div>
+  <script>
+    const container = document.getElementById('container');
+
+    var connection = new WebSocket('ws://localhost:8080');
+    connection.binaryType = 'arraybuffer';
+
+    connection.onmessage = function(msg) {
+      var numbers = new Int16Array(msg.data);
+
+      let spans = [];
+      for (let i = 0; i < numbers.length; i++)
+        spans.push( React.createElement('span', null, numbers[i] + ' ') );
+      let div = React.createElement('div', null, spans);
+
+      ReactDOM.render(div, container);
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+version: '3.1'
+
+services:
+
+  db:
+    image: postgres:10.4
+    restart: always
+    ports: 
+      - 5432:5432
+    volumes:
+      - "./db/init.sql:/docker-entrypoint-initdb.d/init.sql"
+    environment:
+      POSTGRES_PASSWORD: secret
+
+  generator:
+    build: generator
+    restart: always
+    depends_on:
+      - db
+    environment:
+      PGHOST: db
+      PGPORT: 5432
+      PGDATABASE: postgres
+      PGUSER: postgres
+      PGPASSWORD: secret
+      GENERATOR_WORKERS: 8
+      GENERATOR_INTERVAL: 10
+      GENERATOR_NUMBER_OF_NUMBERS: 5000
+
+  backend:
+    build: backend
+    restart: always
+    ports: 
+      - 8080:8080
+    depends_on:
+      - db
+    environment:
+      PGHOST: db
+      PGPORT: 5432
+      PGDATABASE: postgres
+      PGUSER: postgres
+      PGPASSWORD: secret
+
